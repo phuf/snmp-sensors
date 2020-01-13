@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 project(sensors-snmp)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=gnu++11")
-add_executable(${PROJECT_NAME} sensors-snmp.cc temp-sensors-table.cc)
+add_library(${PROJECT_NAME} SHARED sensors-snmp.cc temp-sensors-table.cc)
 target_link_libraries(${PROJECT_NAME} netsnmp netsnmpagent sensors)

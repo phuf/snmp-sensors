@@ -2,6 +2,7 @@
 #define LMTEMPSENSORSTABLE_H
 
 void init_lmTempSensorsTable(void);
+void deinit_lmTempSensorsTable();
 void initialize_table_lmTempSensorsTable(void);
 Netsnmp_Node_Handler lmTempSensorsTable_handler;
 Netsnmp_First_Data_Point lmTempSensorsTable_get_first_data_point;

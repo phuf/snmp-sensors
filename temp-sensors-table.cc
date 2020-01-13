@@ -6,8 +6,16 @@
 #include "temp-sensors-table.h"
 
 static const size_t kMaxSensorNameLength = 32;
+netsnmp_handler_registration *reg = NULL;
 
 void init_lmTempSensorsTable(void) { initialize_table_lmTempSensorsTable(); }
+
+void deinit_lmTempSensorsTable(void) { 
+    if (reg) {
+        netsnmp_unregister_handler(reg);
+        reg = NULL;
+    }
+}
 
 struct lmTempSensorsTable_entry {
     long lmTempSensorsIndex;
@@ -34,10 +42,9 @@ lmTempSensorsTable_createEntry(long lmTempSensorsIndex) {
 }
 
 void initialize_table_lmTempSensorsTable(void) {
-    const oid lmTempSensorsTable_oid[] = {1, 3, 6, 1, 4, 1, 2021, 13, 16, 2};
+    const oid lmTempSensorsTable_oid[] = {1, 3, 6, 1, 4, 1, 2021, 13, 16, 44};
     const size_t lmTempSensorsTable_oid_len =
         OID_LENGTH(lmTempSensorsTable_oid);
-    netsnmp_handler_registration *reg;
     netsnmp_iterator_info *iinfo;
     netsnmp_table_registration_info *table_info;
 
@@ -68,7 +75,7 @@ void initialize_table_lmTempSensorsTable(void) {
 
 void lmTempSensorsTable_removeAllEntries() {
     while (lmTempSensorsTable_head) {
-        auto next = lmTempSensorsTable_head->next;
+        lmTempSensorsTable_entry* next = lmTempSensorsTable_head->next;
         SNMP_FREE(lmTempSensorsTable_head);
         lmTempSensorsTable_head = next;
     }
@@ -100,7 +107,7 @@ void lmTempSensorsTable_addEntries() {
                         double value;
                         if (0 ==
                             sensors_get_value(cn, subfeature->number, &value)) {
-                            auto entry = lmTempSensorsTable_createEntry(index++);
+                            lmTempSensorsTable_entry* entry = lmTempSensorsTable_createEntry(index++);
                             strncpy(entry->lmTempSensorsDevice,
                                     sensors_get_label(cn, feature),
                                     kMaxSensorNameLength);
